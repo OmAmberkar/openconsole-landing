@@ -112,7 +112,7 @@ function App() {
 
           {/* Call to Action Button */}
           <motion.a
-            href='https://openconsole-dashboard-deploy.pages.dev/sign-in'
+            href='https://openconsole-console.pages.dev/sign-in'
             target='_blank'
             onClick={playClick}
             rel='noopener noreferrer'

@@ -77,7 +77,7 @@ export default function FinalCTA() {
         >
           {/* Primary Button (Demo) */}
           <a
-            href='https://openconsole-dashboard-deploy.pages.dev/sign-in'
+            href='https://openconsole-console.pages.dev/sign-in'
             target='_blank'
             rel='noreferrer'
           >
