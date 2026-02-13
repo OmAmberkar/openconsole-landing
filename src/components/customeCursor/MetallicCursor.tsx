@@ -6,7 +6,7 @@ export const MetallicCursor = () => {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+  const springConfig = { damping: 10, stiffness: 1000, mass: 0.1 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
@@ -57,7 +57,7 @@ export const MetallicCursor = () => {
         translateY: '-2px',
       }}
       animate={{
-        scale: isClicking ? 0.9 : 1,
+        scale: isClicking ? 0.4 : 1,
         rotate: isClicking ? -10 : 0,
       }}
     >
