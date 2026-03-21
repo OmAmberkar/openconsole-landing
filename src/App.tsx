@@ -1,185 +1,215 @@
-import { motion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
-import Spotlight from './components/ui/Spotlight';
+import { useState, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ArrowRight, Terminal } from 'lucide-react';
+import { SiGooglecloud} from 'react-icons/si';
+import { FaAws } from "react-icons/fa6";
+import { VscAzure } from "react-icons/vsc";
+
+// UI Components
 import Features from './components/ui/Features';
+import Spotlight from './components/ui/Spotlight';
 import FinalCTA from './components/ui/FinalCTA';
 import Footer from './components/ui/Footer';
+import TrustedBy from './components/ui/TrustedBy';
+import Workflow from './components/ui/Workflow';
+import Pricing from './components/ui/Pricing';
 import MetallicCursor from './components/customeCursor/MetallicCursor';
-import { useSound } from './hooks/useSound';
+import Preloader from './components/ui/Preloader';
 
-// Main Container variants (for Title and Spotlight)
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.3,
-    },
-  },
-};
-
-// How individual elements enter the screen (Title, SpotlightWrapper
-const itemVariants: Variants = {
-  // HIDDEN: Element starts off-screen (100px), shrunk (0.7), blurry, and tilted.
-  hidden: {
-    opacity: 0,
-    y: 100,
-    scale: 0.7,
-    rotate: 10,
-    filter: 'blur(8px)',
-  },
-  // SHOW: Element snaps back to normal size, sharpness, and position.
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    rotate: 0,
-    filter: 'blur(0px)',
-    transition: {
-      type: 'spring',
-      stiffness: 80, // Slightly reduced stiffness
-      damping: 18, // Added damping for a softer stop
-      mass: 0.5, // Added mass for a heavier, more dramatic feel
-      duration: 0.6,
-    },
-  },
-};
-
-// Subheading container variants (for AWS, GCP list)
-const containerVariants2: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1, // Faster stagger for the list items
-    },
-  },
-};
-
-// Subheading individual word variants
-const wordVariants: Variants = {
-  hidden: { y: 20, opacity: 0, scale: 0.8 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    scale: 1,
-    transition: { type: 'spring', stiffness: 120, damping: 20 },
-  },
-};
+// Custom Hooks
+import { useGridParallax, useMagneticButton } from './hooks/useGsapAnimations';
 
 function App() {
-  const { playClick } = useSound();
+  const [loading, setLoading] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const secondaryGridRef = useRef<HTMLDivElement>(null);
+  const heroCtaRef = useRef<HTMLAnchorElement>(null);
+  const mouseSpotlightRef = useRef<HTMLDivElement>(null);
+
+  // 1. Parallax & Magnetic Hooks
+  useGridParallax(gridRef);
+  useMagneticButton(heroCtaRef, 40);
+
+  // 2. Global Mouse Spotlight Effect (The "Flashlight" feel)
+  useGSAP(() => {
+    const tl = gsap.timeline({ delay: 1 }); // Start after preloader roughly
+
+  tl.from("header div", {
+    width: 0,
+    opacity: 0,
+    duration: 1.2,
+    ease: "expo.out"
+  })
+  .from("header a", {
+    y: 20,
+    opacity: 0,
+    stagger: 0.1,
+    ease: "back.out(2)",
+    duration: 0.8
+  }, "-=0.6");
+  
+    const handleMouseMove = (e: MouseEvent) => {
+      gsap.to(mouseSpotlightRef.current, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, { scope: containerRef });
+  
 
   return (
-    <div className='min-h-screen bg-[#07031a] text-neutral-200 overflow-x-hidden relative selection:bg-blue-500/30 selection:text-blue-100 cursor-none'>
-      {/* Inject the custom cursor */}
+    <div ref={containerRef} className="relative bg-[#000000] selection:bg-cyan-500/30">
       <MetallicCursor />
+      {loading && <Preloader onComplete={() => setLoading(false)} />}
+      
+      {/* 3. Texture Layer: Film Grain/Noise */}
+      <div className="fixed inset-0 z-100 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
-      {/* Subtle animated background gradient mesh */}
-      {/* <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-blue-900/10 via-[#ffff] to-[#0a0a0a] -z-10 pointer-events-none"></div> */}
-      <div className='fixed inset-0 z-0 pointer-events-none'>
-        <div className='absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[34px_34px]'></div>
-        <div className='absolute left-0 right-0 top-1/3 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-blue-600 opacity-40 blur-[100px]'></div>
+      {/* 4. Global Mouse Follower Glow */}
+      <div 
+        ref={mouseSpotlightRef}
+        className="fixed top-0 left-0 w-[600px] h-[600px] -ml-[300px] -mt-[300px] rounded-full bg-cyan-500/10 blur-[120px] pointer-events-none z-1 mix-blend-screen"
+      />
+
+      <div className="min-h-screen text-white overflow-hidden font-space relative">
+        
+        {/* 5. Layered Parallax Background */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          {/* Primary Grid */}
+          <div ref={gridRef} className="absolute inset-0 opacity-[0.15] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size[60px_60px]"></div>
+          
+          {/* Secondary Faster Grid (Depth) */}
+          <div ref={secondaryGridRef} className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size[120px_120px] transform scale-150"></div>
+          
+          {/* Ambient Purple Wash */}
+          <div className="absolute top-0 right-0 w-[80%] h-[60%] bg-purple-900/10 blur-[160px] rounded-full -translate-y-1/2 translate-x-1/4"></div>
+        </div>
+
+        <div className="relative z-10">
+         
+          
+
+
+<header className="absolute top-8 left-1/2 -translate-x-1/2 z-100 border rounded-full drop-shadow-[0_0_8px_rgba(0,0,0,0.9)]">
+  <div className="flex items-center gap-6 px-8 py-3 rounded-full border border-white/10 bg-black/40 backdrop-blur-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+    
+    {/* AWS Logo */}
+    <a 
+      href="#aws" 
+      className="group relative flex items-center justify-center w-10 h-10 transition-all duration-300"
+    >
+      <FaAws className="text-neutral-500 group-hover:text-[#FF9900] group-hover:drop-shadow-[0_0_8px_rgba(255,153,0,0.6)] w-6 h-6 transition-all" />
+      <div className="absolute -bottom-12 px-2 py-1 bg-black/80 border border-white/10 rounded text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+        AWS_NODE
       </div>
+    </a>
 
-      {/* Main content container with staggered animation */}
-      {/* CHANGE 1: Updated main container to use whileInView and viewport */}
-      <motion.div
-        className='container mx-auto px-4 py-12 md:py-20 flex flex-col items-center justify-center text-center z-10 relative'
-        variants={containerVariants}
-        initial='hidden'
-        whileInView='show' // Changed from animate="show"
-        viewport={{ margin: '-100px' }} // Removed once: true, added margin so it triggers before fully on screen
-      >
-        {/* --- Header Section (Responsive Layout) --- */}
-        <motion.div
-          className='w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4 mb-16 md:mb-24'
-          variants={itemVariants}
-        >
-          {/* Logo */}
+    <div className="w-px h-4 bg-white/10" />
 
-          {/* Title */}
-          <h1 className='text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter flex items-center gap-5'>
-            <img src='/OC.png' alt='OC' className='w-20 h-20' />
-            <span className='bg-clip-text text-transparent bg-linear-to-b from-white to-gray-800 inline-block pb-2'>
-              Open
-            </span>
-            <span className='text-blue-500 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]'>
-              Console
-            </span>
-          </h1>
+    {/* GCP Logo */}
+    <a 
+      href="#gcp" 
+      className="group relative flex items-center justify-center w-10 h-10 transition-all duration-300"
+    >
+      <SiGooglecloud className="text-neutral-500 group-hover:text-[#4285F4] group-hover:drop-shadow-[0_0_8px_rgba(66,133,244,0.6)] w-6 h-6 transition-all" />
+      <div className="absolute -bottom-12 px-2 py-1 bg-black/80 border border-white/10 rounded text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+        GCP_CORE
+      </div>
+    </a>
 
-          {/* Call to Action Button */}
-          <motion.a
-            href='https://openconsole-console.pages.dev/sign-in'
+    <div className="w-px h-4 bg-white/10" />
+
+    {/* Azure Logo */}
+    <a 
+      href="#azure" 
+      className="group relative flex items-center justify-center w-10 h-10 transition-all duration-300"
+    >
+      <VscAzure className="text-neutral-500 group-hover:text-[#0078D4] group-hover:drop-shadow-[0_0_8px_rgba(0,120,212,0.6)] w-6 h-6 transition-all" />
+      <div className="absolute -bottom-12 px-2 py-1 bg-black/80 border border-white/10 rounded text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+        AZURE_SATELLITE
+      </div>
+    </a>
+
+    {/* Status Indicator at the end of the cluster */}
+    <div className="ml-4 flex items-center gap-2 pl-4 border-l border-white/10">
+      <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#22d3ee]"></div>
+      <span className="text-[10px] font-mono text-cyan-400/70 tracking-tighter">LINK_STABLE</span>
+    </div>
+  </div>
+</header>
+
+          <main className="relative pt-32 pb-20 px-4 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-screen">
+            
+            {/* 7. Enhanced Core Reactor (Orbital Path) */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] aspect-square pointer-events-none -z-10">
+               <div className="absolute inset-0 rounded-full border border-cyan-500/5 rotate-12 animate-[pulse_4s_ease-in-out_infinite]"></div>
+               <div className="absolute inset-20 rounded-full border border-purple-500/10 -rotate-12"></div>
+               <div className="absolute top-0 left-1/2 w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_15px_#00f0ff] animate-[ping_3s_linear_infinite]"></div>
+            </div>
+
+            <div className="text-center">
+              <div className="group relative inline-flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-900/50 border border-white/10 text-xs font-mono mb-12 hover:border-cyan-500/50 transition-all cursor-help">
+                <Terminal size={14} className="text-cyan-400" />
+                <span className="text-neutral-400 tracking-[0.2em] uppercase">Status: </span>
+                <span className="text-cyan-400 font-bold">Protocol v2.0 Engaged</span>
+                <div className="absolute inset-0 rounded-full bg-cyan-500/5 blur-md group-hover:bg-cyan-500/10 transition-all"></div>
+              </div>
+
+              <h1 className="text-6xl md:text-[10rem] font-bold tracking-tighter mb-8 leading-[0.85] text-white">
+                ORCHESTRATE <br />
+                <span className="italic font-light text-neutral-500">THE</span> 
+                <span className="bg-linear-to-r from-cyan-400 via-white to-purple-500 text-transparent bg-clip-text"> CLOUD</span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-neutral-400 mb-12 max-w-xl mx-auto font-light leading-relaxed tracking-tight">
+                A high-performance control plane for <span className="text-white border-b border-white/20">multi-cloud</span> environments. Zero latency. Infinite scale.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
+                <a 
+                  ref={heroCtaRef}
+                  href='https://openconsole-console.pages.dev/sign-in'
             target='_blank'
-            onClick={playClick}
-            rel='noopener noreferrer'
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className='group relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium rounded-lg group bg-linear-to-br from-blue-500 to-purple-600 group-hover:from-blue-500 group-hover:to-purple-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 hover:bg-black'
-          >
-            <span className='relative px-6 py-3 transition-all ease-in duration-200 bg-[#0a0a0a] rounded-md group-hover:bg-opacity-0 text-xl font-semibold bg-clip-text text-transparent bg-linear-to-r from-blue-200 to-purple-200  group-hover:text-white'>
-              Get Started <span className='ml-2'>→</span>
-            </span>
-            {/* Button Glow Effect */}
-            <div className='absolute inset-0 h-full w-full scale-0 rounded-lg transition-all duration-300 group-hover:scale-100 group-hover:bg-blue-500/20 blur-xl'></div>
-          </motion.a>
-        </motion.div>
+            rel='noreferrer'
+                  className="group relative px-10 py-5 bg-white text-black rounded-full font-bold overflow-hidden transition-transform active:scale-95"
+                >
+                  <span className="relative z-10 flex items-center gap-2 uppercase tracking-tighter">
+                    Initialize Core <ArrowRight size={18} />
+                  </span>
+                  <div className="absolute inset-0 bg-cyan-400 translate-y-[101%] group-hover:translate-y-0 transition-transform duration-300"></div>
+                </a>
+                
+                <div className="flex gap-6 items-center">
+                  <div className="flex -space-x-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="w-8 h-8 rounded-full border-2 border-black bg-neutral-800" />
+                    ))}
+                  </div>
+                  <span className="text-xs font-mono text-neutral-500 uppercase tracking-widest">Join 2k+ Engineers</span>
+                </div>
+              </div>
+            </div>
+          </main>
 
-        {/* CHANGE 2: Updated subheading container to also use whileInView for reverse animation */}
-        <motion.div
-          className='text-xl md:text-2xl font-medium tracking-wide mb-12 uppercase flex flex-wrap justify-center'
-          variants={containerVariants2}
-          initial='hidden'
-          whileInView='visible' // Changed from animate="visible"
-          viewport={{ margin: '-50px' }} // Add viewport prop so it triggers repeatedly on scroll
-        >
-          <motion.span className='text-yellow-300/90 drop-shadow-md' variants={wordVariants}>
-            AWS
-          </motion.span>
-
-          <motion.span className='mx-3 text-white' variants={wordVariants}>
-            |
-          </motion.span>
-
-          <motion.span className='text-blue-500 drop-shadow-md' variants={wordVariants}>
-            GCP
-          </motion.span>
-
-          <motion.span className='mx-3 text-white' variants={wordVariants}>
-            |
-          </motion.span>
-
-          <motion.span className='text-sky-400 drop-shadow-md' variants={wordVariants}>
-            Azure
-          </motion.span>
-
-          <motion.span className='mx-3 text-white' variants={wordVariants}>
-            |
-          </motion.span>
-
-          <motion.span className='text-neutral-200' variants={wordVariants}>
-            Private Servers
-          </motion.span>
-        </motion.div>
-
-        {/* --- Spotlight Component Wrapper --- */}
-        {/* This inherits from the main containerVariants, so it will also reverse animate */}
-        <motion.div className='w-full mb-50' variants={itemVariants}>
-          <Spotlight />
-        </motion.div>
-        <motion.div className='w-full mb-50' variants={itemVariants}>
-          <Features />
-        </motion.div>
-        <motion.div className='w-full mb-50' variants={itemVariants}>
-          <FinalCTA />
-        </motion.div>
-        <motion.div className='w-full' variants={itemVariants}>
+          {/* 8. Content Sections with consistent spacing */}
+          <div className="space-y-64 pb-32">
+            <TrustedBy />
+            <Features />
+            <Workflow />
+            <Spotlight />
+            <Pricing />
+            <FinalCTA />
+          </div>
+          
           <Footer />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,159 +1,103 @@
-import React from 'react';
-import type { Variants } from 'framer-motion';
-import { motion } from 'framer-motion';
-import {
-  CloudCog,
-  ShieldCheck,
-  Workflow,
-  BrainCircuit,
-  ChartAreaIcon,
-  BlocksIcon,
-  type LucideIcon,
-} from 'lucide-react';
+import { useRef } from 'react';
+import { Network, Search, Zap, Shield, Database, LayoutTemplate } from 'lucide-react';
+import { useFeaturesStagger } from '../../hooks/useGsapAnimations';
 
-// ==============================
-// 1. CONFIGURATION & DATA
-// ==============================
-
-interface FeatureItem {
-  title: string;
-  description: string;
-  icon: LucideIcon;
-  color: string; // Tailwind color class base (e.g., "blue", "purple")
-}
-
-const featuresData: FeatureItem[] = [
+const features = [
   {
-    title: 'Unified Multi-Cloud Control',
-    description:
-      'Stop tab switching. Manage AWS, GCP, Azure, and private servers from a single, real-time glass pane.',
-    icon: CloudCog,
-    color: 'blue',
+    icon: LayoutTemplate,
+    title: 'Multi-Cloud Dashboard',
+    description: 'Control AWS, GCP, and Azure from a single pane of glass with unified IAM handling.',
   },
   {
-    title: 'Automated Workflows',
-    description:
-      'Integrate with tools like Flowise to automate deployments, scaling, and routine infrastructure tasks.',
-    icon: Workflow,
-    color: 'indigo',
+    icon: Zap,
+    title: 'Lightning Provisioning',
+    description: 'Deploy complex infrastructure stacks across regions in under 60 seconds relying on Edge architecture.',
   },
   {
-    title: 'Enforced Security & MFA',
-    description:
-      'Standardize security protocols across all providers with mandatory multi-factor authentication and policy enforcement.',
-    icon: ShieldCheck,
-    color: 'purple',
+    icon: Search,
+    title: 'Global Resource Search',
+    description: 'Instantly locate any server, database, or lambda function across all your connected clouds.',
   },
   {
-    title: 'AI-Powered Cost Intel',
-    description:
-      'AI analyzes your cross-cloud spend to identify idle resources and recommend actionable savings.',
-    icon: BrainCircuit,
-    color: 'pink',
+    icon: Shield,
+    title: 'Unified Complaince',
+    description: 'Enforce SOC2, HIPAA, and custom security policies natively across every provider automatically.',
   },
   {
-    title: 'Real-Time Monitoring',
-    description:
-      'Get unified dashboards with real-time metrics, alerts, and logs from all your cloud and on-premise resources.',
-    icon: ChartAreaIcon,
-    color: 'indigo',
+    icon: Database,
+    title: 'Cost Intelligence',
+    description: 'Identify unattached EBS volumes, idle DBs, and wasted resources with AI-driven insights.',
   },
   {
-    title: 'Customizable Dashboards',
-    description:
-      'Tailor your control panel with widgets and views that matter most to your operations.',
-    icon: BlocksIcon,
-    color: 'purple',
+    icon: Network,
+    title: 'VPC Peering Automized',
+    description: 'Connect VPCs across different cloud providers with single-click dedicated networking.',
   },
 ];
 
-// ==============================
-// 2. ANIMATION VARIANTS
-// ==============================
+export default function Features() {
+  const containerRef = useRef<HTMLDivElement>(null);
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-    },
-  },
-};
-
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 50, scale: 0.9 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 100,
-      damping: 15,
-    },
-  },
-};
-
-// 3. INDIVIDUAL FEATURE CARD
-// ==============================
-
-const FeatureCard: React.FC<{ item: FeatureItem }> = ({ item }) => {
-  const Icon = item.icon;
+  // Re-use GSAP batching for stagger
+  useFeaturesStagger(containerRef, '.gsap-feature-card');
 
   return (
-    <motion.div
-      variants={cardVariants}
-      whileHover={{ y: -5, scale: 1.02 }}
-      className='group h-90 relative p-8 backdrop-blur-md overflow-hidden transition-all duration-300 hover:shadow-2xl  hover:border-purple-700 hover:bg-purple-700/20 bg-blue-950/30 border-2  border-l-blue-700 border-t-blue-700 border-r-0 border-b-0 shadow-[0_0_10px_rgba(59,130,246,0.3)] rounded-4xl'
-    >
-      {/* Internal Glow Gradient on Hover - Changed to Cyan */}
-      <div className='absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 bg-[radial-linear(ellipse_at_center,var(--tw-gradient-stops))] from-cyan-600/30 to-transparent -z-10'></div>
-
-      {/* Icon Wrapper - Changed color to Cyan */}
-      <div className='mb-6 inline-block p-4 rounded-xl bg-cyan-950/50 text-blue-400 transition-colors duration-300 group-hover:bg-blue-500 group-hover:text-white shadow-lg shadow-cyan-900/20'>
-        <Icon className='w-8 h-8' />
+    <section id="features" ref={containerRef} className="relative py-24 md:py-32 w-full bg-[#000000] overflow-hidden">
+      
+      {/* Background Matrix/Grid Overlay */}
+      <div className="absolute inset-0 bg-[#02010A] z-0"></div>
+      <div className="absolute inset-0 z-0 opacity-10 blur-3xl pointer-events-none">
+         <div className="absolute top-[20%] right-[10%] w-[500px] h-[500px] bg-neon-purple rounded-full"></div>
+         <div className="absolute bottom-[10%] left-[5%] w-[400px] h-[400px] bg-neon-cyan rounded-full"></div>
       </div>
 
-      {/* Content */}
-      <h3 className='text-2xl font-bold text-white mb-4 group-hover:text-cyan-100 transition-colors'>
-        {item.title}
-      </h3>
-      <p className='text-neutral-400 leading-relaxed group-hover:text-neutral-300 transition-colors'>
-        {item.description}
-      </p>
-    </motion.div>
-  );
-};
+      <div className="container mx-auto px-4 max-w-7xl relative z-10">
+        <div className="text-center mb-16 md:mb-24">
+           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-900/30 border border-cyan-500/30 text-neon-cyan text-sm font-bold mb-6 backdrop-blur-md uppercase tracking-widest font-mono-tech">
+             Core Capabilities
+           </div>
+          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 font-space text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] tracking-tight">
+             Beyond Standard <span className="text-neon-cyan">Operations</span>
+          </h2>
+          <p className="text-xl text-neutral-400 font-mono-tech max-w-2xl mx-auto">
+            Everything you need to scale infrastructure dynamically without the AWS Management Console headache.
+          </p>
+        </div>
 
-// ==============================
-// 4. MAIN FEATURES SECTION COMPONENT
-// ==============================
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <div
+                key={index}
+                className="gsap-feature-card group relative h-full interactive"
+              >
+                {/* 
+                  Using the liquid-border from index.css for an extreme Sci-Fi look.
+                  The liquid-border class manages the spinning conic gradient mask. 
+                */}
+                <div className="liquid-border rounded-2xl h-full p-px">
+                   <div className="relative h-full bg-[#060318]/90 backdrop-blur-xl rounded-[calc(1rem-1px)] p-8 flex flex-col z-10">
+                     
+                     <div className="w-14 h-14 rounded-xl bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                       <Icon className="w-7 h-7 text-neon-cyan drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]" />
+                     </div>
+                     
+                     <h3 className="text-2xl font-bold font-space text-white mb-3 group-hover:text-neon-cyan transition-colors">
+                       {feature.title}
+                     </h3>
+                     
+                     <p className="text-neutral-400 font-mono-tech leading-relaxed grow">
+                       {feature.description}
+                     </p>
 
-const FeaturesSection = () => {
-  return (
-    <section className='py-24 md:py-32 relative z-10 overflow-hidden'>
-      {/* ... (keep background glow) */}
-
-      <div className='container mx-auto px-4'>
-        {/* ... (keep section header) */}
-
-        {/* Features Grid - Removed align-middle as it's not needed here */}
-        <motion.div
-          variants={containerVariants}
-          initial='hidden'
-          whileInView='visible'
-          viewport={{ once: true, margin: '-100px' }} // Triggers when 100px from the viewport top
-          className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8'
-        >
-          {featuresData.map((item, index) => (
-            // Each card uses the 'Crazy' spring animation and contributes to the stagger
-            <FeatureCard key={index} item={item} />
-          ))}
-        </motion.div>
+                   </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
-};
-
-export default FeaturesSection;
+}
