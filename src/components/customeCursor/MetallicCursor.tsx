@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import gsap from 'gsap';
 
-
 export const MetallicCursor = () => {
   const [isHovering, setIsHovering] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -18,9 +17,9 @@ export const MetallicCursor = () => {
     if (!cursor) return;
 
     // We'll use GSAP quickTo for 60fps ultra-smooth cursor tracking
-    const xTo = gsap.quickTo(cursor, "x", { duration: 0.1, ease: "power3" });
-    const yTo = gsap.quickTo(cursor, "y", { duration: 0.1, ease: "power3" });
-    const scaleTo = gsap.quickTo(cursor, "scale", { duration: 0.3, ease: "power4.out" });
+    const xTo = gsap.quickTo(cursor, 'x', { duration: 0.1, ease: 'power3' });
+    const yTo = gsap.quickTo(cursor, 'y', { duration: 0.1, ease: 'power3' });
+    const scaleTo = gsap.quickTo(cursor, 'scale', { duration: 0.3, ease: 'power4.out' });
 
     const moveCursor = (e: MouseEvent) => {
       xTo(e.clientX);
@@ -31,22 +30,28 @@ export const MetallicCursor = () => {
       const target = e.target as HTMLElement;
       // Check if we are hovering something interactive
       if (
-        target.tagName.toLowerCase() === 'button' || 
-        target.tagName.toLowerCase() === 'a' || 
-        target.closest('button') || 
+        target.tagName.toLowerCase() === 'button' ||
+        target.tagName.toLowerCase() === 'a' ||
+        target.closest('button') ||
         target.closest('a') ||
         target.closest('.interactive')
       ) {
         setIsHovering(true);
         scaleTo(1.5);
         if (svgRef.current) {
-          gsap.to(svgRef.current, { filter: 'drop-shadow(0 0 10px #3b82f6) hue-rotate(90deg)', duration: 0.3 });
+          gsap.to(svgRef.current, {
+            filter: 'drop-shadow(0 0 10px #3b82f6) hue-rotate(90deg)',
+            duration: 0.3,
+          });
         }
       } else {
         setIsHovering(false);
         scaleTo(1);
         if (svgRef.current) {
-          gsap.to(svgRef.current, { filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.5)) hue-rotate(0deg)', duration: 0.3 });
+          gsap.to(svgRef.current, {
+            filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.5)) hue-rotate(0deg)',
+            duration: 0.3,
+          });
         }
       }
     };
@@ -68,7 +73,7 @@ export const MetallicCursor = () => {
       className='fixed top-0 left-0 z-9999 pointer-events-none hidden md:block'
       style={{
         transform: 'translate(-2px, -2px)',
-        transformOrigin: 'center center'
+        transformOrigin: 'center center',
       }}
     >
       <svg

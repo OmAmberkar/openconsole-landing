@@ -2,7 +2,22 @@ import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 
-// 1. Mock IntersectionObserver (Class-based to support 'new IntersectionObserver()')
+// 1. Mock matchMedia (CRITICAL for GSAP/ScrollTrigger)
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // Deprecated
+    removeListener: vi.fn(), // Deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// 2. Mock IntersectionObserver (Class-based to support 'new IntersectionObserver()')
 class IntersectionObserverMock {
   readonly root: Element | null = null;
   readonly rootMargin: string = '';
@@ -18,7 +33,7 @@ class IntersectionObserverMock {
 
 vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
 
-// 2. Mock ResizeObserver (Class-based)
+// 3. Mock ResizeObserver (Class-based)
 class ResizeObserverMock {
   constructor() {}
 
@@ -29,7 +44,7 @@ class ResizeObserverMock {
 
 vi.stubGlobal('ResizeObserver', ResizeObserverMock);
 
-// 3. Mock window.scrollTo
+// 4. Mock window.scrollTo
 Object.defineProperty(window, 'scrollTo', { value: vi.fn(), writable: true });
 
 // Clean up after each test case

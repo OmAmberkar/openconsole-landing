@@ -67,7 +67,7 @@ const FooterColumn = ({
 // ==============================
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
+
   // Custom GSAP Animation Refs
   const footerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLHeadingElement>(null);
@@ -76,34 +76,38 @@ const Footer = () => {
   useGlitchShimmer(logoRef);
 
   return (
-    <footer ref={footerRef} className='pt-16 md:pt-24 relative z-10 overflow-hidden bg-[#000000] border-t border-t-neutral-900'>
-      
+    <footer
+      ref={footerRef}
+      className='pt-16 md:pt-24 relative z-10 overflow-hidden bg-[#000000] border-t border-t-neutral-900'
+    >
       {/* Black Hole Ambient Glow */}
       <div className='absolute inset-0 z-0 opacity-10 pointer-events-none'>
         <div className='w-full h-full bg-[radial-gradient(100%_100%_at_center_bottom,rgba(0,240,255,0.2)_0%,transparent_70%)]'></div>
       </div>
-      
+
       {/* Bottom Anchoring Glow */}
-      <div className="absolute bottom-0 inset-x-0 h-40 bg-[linear-gradient(to_top,rgba(112,0,255,0.1)_0%,transparent_100%)] pointer-events-none"></div>
+      <div className='absolute bottom-0 inset-x-0 h-40 bg-[linear-gradient(to_top,rgba(112,0,255,0.1)_0%,transparent_100%)] pointer-events-none'></div>
 
       {/* Main Footer Content */}
       <div className='container mx-auto px-4 relative z-10 max-w-7xl'>
-        
         <div className='grid grid-cols-1 md:grid-cols-12 gap-y-16 gap-x-8 lg:gap-12 mb-12 md:mb-16 border-b border-neutral-900 pb-12 md:pb-16'>
-          
           {/* Column 1: Brand & Newsletter */}
           <div className='gsap-footer-col md:col-span-4 lg:col-span-5 flex flex-col gap-6 text-center md:text-left items-center md:items-start'>
             {/* Brand Logo - Glitch/Shimmer applied via hook */}
             <div>
-              <h3 
+              <h3
                 ref={logoRef}
                 className='text-3xl font-extrabold text-white tracking-tight mb-4 cursor-pointer inline-block interactive font-space select-none'
               >
-                Open<span className='text-neon-cyan drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]'>Console</span>{' '}
+                Open
+                <span className='text-neon-cyan drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]'>
+                  Console
+                </span>{' '}
                 <InfinityIcon className='w-6 h-6 text-neon-purple inline-block ml-1 drop-shadow-[0_0_8px_rgba(112,0,255,0.8)]' />
               </h3>
               <p className='text-neutral-500 font-mono-tech text-sm leading-relaxed max-w-sm mx-auto md:mx-0'>
-                A unified cloud intelligence layer built for engineering standards of the future. Simplify complexity, trace deployments, and optimize infrastructure automatically.
+                A unified cloud intelligence layer built for engineering standards of the future.
+                Simplify complexity, trace deployments, and optimize infrastructure automatically.
               </p>
             </div>
 
@@ -141,7 +145,8 @@ const Footer = () => {
         {/* Sub-Footer: Copyright & Socials */}
         <div className='gsap-footer-col pt-4 pb-12 flex flex-col-reverse md:flex-row justify-between items-center gap-8'>
           <p className='text-sm text-neutral-600 font-mono-tech text-center md:text-left tracking-wide'>
-            System Kernel Built by BEIT Group 5 • Atharva College of Engineering • © {currentYear} OpenConsole
+            System Kernel Built by BEIT Group 5 • Atharva College of Engineering • © {currentYear}{' '}
+            OpenConsole
           </p>
 
           <div className='flex gap-4'>

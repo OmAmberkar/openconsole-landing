@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-cyber-purple: #7000FF;
+  --color-cyber-purple: #7000ff;
   --font-space: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
@@ -10,9 +10,9 @@
    GLOBAL OVERRIDES & VARIABLES
 ========================================= */
 :root {
-  --neon-cyan: #00F0FF;
-  --neon-purple: #7000FF;
-  --neon-emerald: #00FFA3;
+  --neon-cyan: #00f0ff;
+  --neon-purple: #7000ff;
+  --neon-emerald: #00ffa3;
   --glass-bg: rgba(6, 3, 24, 0.4);
   --glass-border: rgba(59, 130, 246, 0.2);
 }
@@ -29,7 +29,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-space), sans-serif;
 }
 
