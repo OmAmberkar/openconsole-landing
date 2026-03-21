@@ -1,73 +1,84 @@
-import { useEffect, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useEffect, useState, useRef } from 'react';
+import gsap from 'gsap';
+
 
 export const MetallicCursor = () => {
-  const [isClicking, setIsClicking] = useState(false);
-  const mouseX = useMotionValue(-100);
-  const mouseY = useMotionValue(-100);
-
-  const springConfig = { damping: 10, stiffness: 1000, mass: 0.1 };
-  const cursorX = useSpring(mouseX, springConfig);
-  const cursorY = useSpring(mouseY, springConfig);
+  const [isHovering, setIsHovering] = useState(false);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const moveCursor = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    };
-    const mouseDown = () => setIsClicking(true);
-    const mouseUp = () => setIsClicking(false);
-
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('mousedown', mouseDown);
-    window.addEventListener('mouseup', mouseUp);
-
-    // --- FIX: FORCE HIDE DEFAULT CURSOR EVERYWHERE ---
-    // We create a style tag to override 'cursor: pointer' on buttons/links
+    // Hide default cursor across the entire page
     const style = document.createElement('style');
-    style.innerHTML = `
-      * {
-        cursor: none !important;
-      }
-    `;
+    style.innerHTML = `* { cursor: none !important; }`;
     style.id = 'metallic-cursor-style';
     document.head.appendChild(style);
 
-    return () => {
-      window.removeEventListener('mousemove', moveCursor);
-      window.removeEventListener('mousedown', mouseDown);
-      window.removeEventListener('mouseup', mouseUp);
+    const cursor = cursorRef.current;
+    if (!cursor) return;
 
-      // Cleanup the style tag when component unmounts
-      const existingStyle = document.getElementById('metallic-cursor-style');
-      if (existingStyle) {
-        existingStyle.remove();
+    // We'll use GSAP quickTo for 60fps ultra-smooth cursor tracking
+    const xTo = gsap.quickTo(cursor, "x", { duration: 0.1, ease: "power3" });
+    const yTo = gsap.quickTo(cursor, "y", { duration: 0.1, ease: "power3" });
+    const scaleTo = gsap.quickTo(cursor, "scale", { duration: 0.3, ease: "power4.out" });
+
+    const moveCursor = (e: MouseEvent) => {
+      xTo(e.clientX);
+      yTo(e.clientY);
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // Check if we are hovering something interactive
+      if (
+        target.tagName.toLowerCase() === 'button' || 
+        target.tagName.toLowerCase() === 'a' || 
+        target.closest('button') || 
+        target.closest('a') ||
+        target.closest('.interactive')
+      ) {
+        setIsHovering(true);
+        scaleTo(1.5);
+        if (svgRef.current) {
+          gsap.to(svgRef.current, { filter: 'drop-shadow(0 0 10px #3b82f6) hue-rotate(90deg)', duration: 0.3 });
+        }
+      } else {
+        setIsHovering(false);
+        scaleTo(1);
+        if (svgRef.current) {
+          gsap.to(svgRef.current, { filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.5)) hue-rotate(0deg)', duration: 0.3 });
+        }
       }
     };
-  }, [mouseX, mouseY]);
+
+    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mouseover', handleMouseOver);
+
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener('mouseover', handleMouseOver);
+      const existingStyle = document.getElementById('metallic-cursor-style');
+      if (existingStyle) existingStyle.remove();
+    };
+  }, []);
 
   return (
-    <motion.div
-      // Added 'pointer-events-none' to ensure the custom cursor doesn't block clicks
+    <div
+      ref={cursorRef}
       className='fixed top-0 left-0 z-9999 pointer-events-none hidden md:block'
       style={{
-        x: cursorX,
-        y: cursorY,
-        translateX: '-2px',
-        translateY: '-2px',
-      }}
-      animate={{
-        scale: isClicking ? 0.4 : 1,
-        rotate: isClicking ? -10 : 0,
+        transform: 'translate(-2px, -2px)',
+        transformOrigin: 'center center'
       }}
     >
       <svg
+        ref={svgRef}
         width='32'
         height='32'
         viewBox='0 0 32 32'
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
-        className='drop-shadow-[2px_4px_6px_rgba(0,0,0,0.5)]'
+        style={{ transition: 'filter 0.3s ease' }}
       >
         <defs>
           <linearGradient id='metalGradient' x1='0%' y1='0%' x2='100%' y2='100%'>
@@ -85,13 +96,13 @@ export const MetallicCursor = () => {
         <path
           d='M2 2L10.5 26L14.5 16.5L24 12.5L2 2Z'
           fill='url(#metalGradient)'
-          stroke='white'
+          stroke={isHovering ? '#3b82f6' : 'white'}
           strokeWidth='1'
         />
 
         <path d='M4.5 5L10.5 21L13.5 14.5L20 11.5L4.5 5Z' fill='url(#metalShine)' />
       </svg>
-    </motion.div>
+    </div>
   );
 };
 

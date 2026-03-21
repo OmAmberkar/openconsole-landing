@@ -1,109 +1,92 @@
-// src/components/FinalCTA.tsx
-import { motion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
+import { useRef } from 'react';
 import { ArrowRight, Github, LayoutDashboard } from 'lucide-react';
 import { useSound } from '../../hooks/useSound';
-// ==============================
-// 1. ANIMATION VARIANTS
-// ==============================
-
-// Define how the container will stagger the animation of its children
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      // Delay the start of children animations slightly
-      delayChildren: 0.2,
-      // Stagger the animation of each child by 0.15 seconds
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-// Define the animation for each individual item (headline, text, buttons)
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 }, // Start a bit lower and invisible
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      // Use a spring transition for a bouncy, natural feel
-      type: 'spring',
-      damping: 20,
-      stiffness: 100,
-      duration: 0.6,
-    },
-  },
-};
-
-// ==============================
-// 2. COMPONENT
-// ==============================
+import { useNeonAuraPulse, useConstellation, useMagneticButton } from '../../hooks/useGsapAnimations';
 
 export default function FinalCTA() {
   const { playClick } = useSound();
+  
+  // GSAP Refs
+  const auraRef = useRef<HTMLDivElement>(null);
+  const constellationRef = useRef<HTMLDivElement>(null);
+  const primaryBtnRef = useRef<HTMLAnchorElement>(null);
+  const secondaryBtnRef = useRef<HTMLAnchorElement>(null);
+
+  // Apply Animation Hooks
+  useNeonAuraPulse(auraRef);
+  useConstellation(constellationRef);
+  useMagneticButton(primaryBtnRef, 50);
+  useMagneticButton(secondaryBtnRef, 50);
+
   return (
-    <section className='py-20 md:py-24 w-full bg-blue-950/30 border-2 border-x-blue-600 border-y-0 shadow-[0_0_30px_rgba(59,130,246,0.3)] md:rounded-full rounded-4xl'>
-      {/* Turn the container into a motion component.
-              It will trigger the 'visible' animation state when it enters the viewport.
-            */}
-      <motion.div
-        className='text-center max-w-4xl mx-auto px-4'
-        variants={containerVariants}
-        initial='hidden'
-        whileInView='visible'
-        // Triggers animation when the element is 100px from the bottom of the viewport
-        viewport={{ margin: '-100px', once: true }}
-      >
-        {/* Headline - Animate as an individual item */}
-        <motion.h2
-          className='text-4xl md:text-5xl font-extrabold text-white mb-6'
-          variants={itemVariants}
-        >
-          Ready to Experience Unified Cloud Ops?
-        </motion.h2>
+    <section className='relative py-20 md:py-24 w-full md:rounded-[4rem] rounded-4xl' ref={constellationRef}>
+      
+      <div className="absolute inset-0 z-0 overflow-hidden md:rounded-[4rem] rounded-4xl pointer-events-none">
+         {/* Crazy Spinning Conic Gradient */}
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[conic-gradient(from_0deg,transparent_0_340deg,rgba(0,240,255,0.4)_360deg)] animate-[spin_4s_linear_infinite] opacity-50 mix-blend-screen"></div>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[conic-gradient(from_0deg,transparent_0_340deg,rgba(112,0,255,0.4)_360deg)] animate-[spin_3s_linear_infinite_reverse] opacity-50 mix-blend-screen"></div>
+      </div>
 
-        {/* Description Text - Animate as an individual item */}
-        <motion.p className='text-xl text-neutral-300 mb-10' variants={itemVariants}>
-          Jump straight into the demo dashboard to see real-time metrics, automated workflows, and
-          cost insights in action.
-        </motion.p>
+      {/* GSAP Neon Aura & Glitch Overlay */}
+      <div 
+        ref={auraRef}
+        className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto w-full h-full rounded-full bg-blue-600/30 blur-[120px] pointer-events-none z-0 mix-blend-screen"
+      ></div>
 
-        {/* Buttons Container - Animate the entire button group together */}
-        <motion.div
-          className='flex flex-col md:flex-row justify-center gap-4'
-          variants={itemVariants}
-        >
-          {/* Primary Button (Demo) */}
+      {/* Main Container */}
+      <div className='relative z-10 text-center max-w-5xl mx-auto px-4 bg-[#060318]/60 border-2 border-x-neon-cyan/80 border-y-neon-purple/50 shadow-[0_0_100px_rgba(0,240,255,0.25)] md:rounded-[4rem] rounded-4xl pt-20 pb-24 backdrop-blur-2xl overflow-hidden group'>
+        
+        {/* Inner Glitch Scanline active on hover */}
+        <div className="absolute inset-0 w-full h-full bg-[linear-gradient(transparent_0%,rgba(0,240,255,0.1)_50%,transparent_100%)] bg-size[100%_4px] opacity-0 group-hover:opacity-100 group-hover:animate-[ping_2s_linear_infinite] pointer-events-none mix-blend-screen"></div>
+
+        {/* Headline */}
+        <h2 className='text-5xl md:text-7xl font-extrabold text-white mb-8 shadow-black drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)] font-space tracking-tight leading-tight relative glow'>
+          Ready to Experience <br className="hidden md:block"/>
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-neon-cyan via-white to-neon-purple drop-shadow-[0_0_25px_rgba(0,240,255,0.8)] animate-pulse">Unified Operations?</span>
+        </h2>
+
+        {/* Description Text */}
+        <p className='text-2xl text-neutral-300 mb-14 max-w-3xl mx-auto font-mono-tech leading-relaxed'>
+          Jump straight into the system dashboard to see real-time metrics, automated deployments, and
+          anomaly detection in action. No credit card required.
+        </p>
+
+        {/* Buttons Container */}
+        <div className='flex flex-col md:flex-row justify-center gap-6 items-center'>
+          
+          {/* Primary Button - Magnetic & Liquid */}
           <a
+            ref={primaryBtnRef}
             href='https://openconsole-console.pages.dev/sign-in'
             target='_blank'
             rel='noreferrer'
+            onClick={playClick}
+            className='inline-block interactive shadow-[0_0_25px_rgba(0,240,255,0.3)] rounded-full liquid-border p-[2px]'
           >
-            <button
-              className='group w-full md:w-auto px-10 py-3.5 rounded-full bg-linear-to-r from-blue-600 to-blue-500 text-white font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer'
-              onClick={playClick}
-            >
-              <LayoutDashboard size={20} />
-              Go to Live Demo
-              <ArrowRight size={20} className='group-hover:translate-x-1 transition-transform' />
+            <button className='group w-full md:w-auto px-10 py-5 rounded-full bg-[#02010A] text-white font-space font-bold transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer hover:shadow-[0_0_40px_rgba(0,240,255,0.6)]'>
+              <LayoutDashboard size={20} className="text-neon-cyan" />
+              <span className="tracking-wide">Deploy Playground</span>
+              <ArrowRight size={20} className='text-neon-cyan group-hover:translate-x-1 transition-transform' />
             </button>
           </a>
 
-          {/* Secondary Button (Source) */}
+          {/* Secondary Button - Magnetic */}
           <a
+            ref={secondaryBtnRef}
             href='https://github.com/openconsole-cloud/openconsole-workspace'
             target='_blank'
             rel='noreferrer'
             onClick={playClick}
-            className='group w-full md:w-auto px-10 py-3.5 rounded-full border border-neutral-700 bg-neutral-800/70 text-neutral-300 font-medium hover:bg-neutral-700 hover:text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer no-underline'
+            className='inline-block interactive rounded-full outline-hidden'
           >
-            <Github size={20} className='group-hover:rotate-6 transition-transform' />
-            View Project Source
+            <button className='group w-full md:w-auto px-10 py-5 rounded-full border border-neutral-700 bg-neutral-800/50 text-neutral-300 font-mono-tech font-bold hover:bg-neutral-700 hover:border-purple-500 hover:text-white hover:shadow-[0_0_20px_rgba(112,0,255,0.4)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer no-underline uppercase tracking-wider text-sm'>
+              <Github size={20} className='group-hover:rotate-12 transition-transform text-neon-purple' />
+              [ View Source ]
+            </button>
           </a>
-        </motion.div>
-      </motion.div>
+
+        </div>
+      </div>
     </section>
   );
 }

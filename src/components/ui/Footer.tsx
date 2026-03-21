@@ -1,11 +1,10 @@
-import { motion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
+import { useRef } from 'react';
 import { Github, Twitter, Linkedin, Mail, Send, Infinity as InfinityIcon } from 'lucide-react';
+import { useFooterStagger, useGlitchShimmer } from '../../hooks/useGsapAnimations';
 
 // ==============================
 // 1. DATA & CONFIGURATION
 // ==============================
-// (Keep existing data...)
 const footerLinks = {
   project: [
     { label: 'Dashboard Demo', href: '#demo' },
@@ -33,22 +32,7 @@ const socialLinks = [
 ];
 
 // ==============================
-// 2. ANIMATION VARIANTS
-// ==============================
-const containerVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: 'easeOut',
-    },
-  },
-};
-
-// ==============================
-// 3. SUB-COMPONENTS
+// 2. SUB-COMPONENTS
 // ==============================
 const FooterColumn = ({
   title,
@@ -57,20 +41,20 @@ const FooterColumn = ({
   title: string;
   links: { label: string; href: string }[];
 }) => (
-  // RESPONSIVE: Center text on mobile, left-align on larger screens
-  <div className='flex flex-col gap-5 text-center sm:text-left items-center sm:items-start'>
-    <h4 className='text-sm font-extrabold text-white uppercase tracking-widest border-b-2 border-blue-600/50 pb-1 w-fit'>
+  // The 'gsap-footer-col' class is used by useFooterStagger
+  <div className='gsap-footer-col flex flex-col gap-6 text-center sm:text-left items-center sm:items-start'>
+    <h4 className='text-sm font-bold text-white uppercase tracking-widest border-b border-neon-cyan/50 pb-2 w-fit font-mono-tech'>
       {title}
     </h4>
-    <ul className='flex flex-col gap-2.5'>
+    <ul className='flex flex-col gap-3'>
       {links.map((link, index) => (
         <li key={index}>
           <a
             href={link.href}
-            className='text-sm text-neutral-400 hover:text-cyan-400 transition-colors duration-200 inline-block relative group'
+            className='text-sm text-neutral-400 font-mono-tech hover:text-neon-cyan transition-colors duration-200 inline-block relative group interactive'
           >
             {link.label}
-            <span className='absolute left-0 bottom-0.5 h-px w-0 bg-cyan-400 transition-all duration-300 group-hover:w-full'></span>
+            <span className='absolute left-0 bottom-0 h-px w-0 bg-neon-cyan transition-all duration-300 group-hover:w-full shadow-[0_0_8px_rgba(0,240,255,0.8)]'></span>
           </a>
         </li>
       ))}
@@ -79,61 +63,65 @@ const FooterColumn = ({
 );
 
 // ==============================
-// 4. MAIN FOOTER COMPONENT
+// 3. MAIN FOOTER COMPONENT
 // ==============================
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  
+  // Custom GSAP Animation Refs
+  const footerRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLHeadingElement>(null);
+
+  useFooterStagger(footerRef, '.gsap-footer-col');
+  useGlitchShimmer(logoRef);
 
   return (
-    // RESPONSIVE: Reduced top padding on mobile (pt-16) -> (md:pt-24)
-    <footer className='pt-16 md:pt-24 relative z-10 overflow-hidden bg-blue-950/30 border-2 border-b-blue-600 border-t-0 border-x-0 shadow-[0_0_30px_rgba(59,130,246,0.3)] rounded-4xl'>
-      {/* Black Hole Radial Gradient */}
-      <div className='absolute inset-0 z-0 opacity-20 mask-[radial-gradient(100%_100%_at_center_bottom,black,transparent)]'>
-        <div className='w-full h-full bg-black/50 bg-[radial-gradient(50%_50%_at_center_bottom,rgba(59,130,246,0.3)_0%,transparent_70%)]'></div>
+    <footer ref={footerRef} className='pt-16 md:pt-24 relative z-10 overflow-hidden bg-[#000000] border-t border-t-neutral-900'>
+      
+      {/* Black Hole Ambient Glow */}
+      <div className='absolute inset-0 z-0 opacity-10 pointer-events-none'>
+        <div className='w-full h-full bg-[radial-gradient(100%_100%_at_center_bottom,rgba(0,240,255,0.2)_0%,transparent_70%)]'></div>
       </div>
+      
+      {/* Bottom Anchoring Glow */}
+      <div className="absolute bottom-0 inset-x-0 h-40 bg-[linear-gradient(to_top,rgba(112,0,255,0.1)_0%,transparent_100%)] pointer-events-none"></div>
 
       {/* Main Footer Content */}
-      <motion.div
-        className='container mx-auto px-4 relative z-10 max-w-7xl'
-        variants={containerVariants}
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true, margin: '-100px' }}
-      >
-        {/* RESPONSIVE: Changed grid gap and padding */}
-        <div className='grid grid-cols-1 md:grid-cols-12 gap-y-12 gap-x-8 lg:gap-8 mb-12 md:mb-16 border-b border-neutral-800 pb-12 md:pb-16'>
+      <div className='container mx-auto px-4 relative z-10 max-w-7xl'>
+        
+        <div className='grid grid-cols-1 md:grid-cols-12 gap-y-16 gap-x-8 lg:gap-12 mb-12 md:mb-16 border-b border-neutral-900 pb-12 md:pb-16'>
+          
           {/* Column 1: Brand & Newsletter */}
-          {/* RESPONSIVE: Center text on mobile */}
-          <div className='md:col-span-4 lg:col-span-4 flex flex-col gap-6 text-center md:text-left items-center md:items-start'>
-            {/* Brand */}
+          <div className='gsap-footer-col md:col-span-4 lg:col-span-5 flex flex-col gap-6 text-center md:text-left items-center md:items-start'>
+            {/* Brand Logo - Glitch/Shimmer applied via hook */}
             <div>
-              <h3 className='text-3xl font-extrabold text-white tracking-tight mb-2'>
-                Open<span className='text-blue-500'>Console</span>{' '}
-                <InfinityIcon className='w-6 h-6 text-cyan-400 inline-block' />
+              <h3 
+                ref={logoRef}
+                className='text-3xl font-extrabold text-white tracking-tight mb-4 cursor-pointer inline-block interactive font-space select-none'
+              >
+                Open<span className='text-neon-cyan drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]'>Console</span>{' '}
+                <InfinityIcon className='w-6 h-6 text-neon-purple inline-block ml-1 drop-shadow-[0_0_8px_rgba(112,0,255,0.8)]' />
               </h3>
-              {/* RESPONSIVE: Max width auto on mobile */}
-              <p className='text-neutral-400 text-base leading-relaxed max-w-sm mx-auto md:mx-0'>
-                Unified cloud operations platform built for modern standards. Simplify ops, enhance
-                security, and optimize costs.
+              <p className='text-neutral-500 font-mono-tech text-sm leading-relaxed max-w-sm mx-auto md:mx-0'>
+                A unified cloud intelligence layer built for engineering standards of the future. Simplify complexity, trace deployments, and optimize infrastructure automatically.
               </p>
             </div>
 
             {/* Newsletter Signup */}
-            <div className='mt-4 w-full max-w-sm mx-auto md:mx-0'>
-              {/* RESPONSIVE: Center heading on mobile */}
-              <h4 className='text-lg font-bold text-cyan-400 mb-3 flex items-center justify-center md:justify-start gap-2'>
-                <Mail className='w-5 h-5' /> Join the Console Newsletter
+            <div className='mt-2 w-full max-w-sm mx-auto md:mx-0'>
+              <h4 className='text-sm font-bold text-neutral-400 mb-4 flex items-center justify-center md:justify-start gap-2 uppercase tracking-widest font-mono-tech'>
+                <Mail className='w-4 h-4 text-neon-cyan' /> Join the Waitlist
               </h4>
               <form className='flex gap-2 relative'>
                 <input
                   type='email'
-                  placeholder='Your work email'
-                  className='w-full bg-neutral-800 border border-neutral-700 rounded-lg pl-4 pr-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all'
+                  placeholder='terminal@domain.com'
+                  className='w-full bg-[#02010A] border border-neutral-800 rounded-xl pl-4 pr-4 py-3 text-sm text-white font-mono-tech placeholder:text-neutral-700 focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all'
                   required
                 />
                 <button
                   type='submit'
-                  className='bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition-colors duration-200 shrink-0 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50'
+                  className='interactive bg-[#060318] hover:bg-[#0a0528] border border-neon-cyan/50 text-neon-cyan hover:text-white p-3 rounded-xl transition-colors duration-200 shrink-0 shadow-[0_0_15px_rgba(0,240,255,0.2)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)]'
                   aria-label='Subscribe'
                 >
                   <Send className='w-5 h-5' />
@@ -143,19 +131,17 @@ const Footer = () => {
           </div>
 
           {/* Columns 2, 3, 4: Link Sections */}
-          {/* RESPONSIVE: Changed to 1 column on mobile, 3 on larger screens */}
-          <div className='md:col-span-8 lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8'>
-            <FooterColumn title='Project' links={footerLinks.project} />
-            <FooterColumn title='Community' links={footerLinks.community} />
-            <FooterColumn title='Legal' links={footerLinks.legal} />
+          <div className='md:col-span-8 lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8'>
+            <FooterColumn title='Framework' links={footerLinks.project} />
+            <FooterColumn title='Ecosystem' links={footerLinks.community} />
+            <FooterColumn title='Compliance' links={footerLinks.legal} />
           </div>
         </div>
 
         {/* Sub-Footer: Copyright & Socials */}
-        <div className='pt-8 pb-8 flex flex-col-reverse md:flex-row justify-between items-center gap-6'>
-          <p className='text-sm text-neutral-500 text-center md:text-left'>
-            Built by BEIT Group 5 • Atharva College of Engineering • © {currentYear} OpenConsole
-            Inc.
+        <div className='gsap-footer-col pt-4 pb-12 flex flex-col-reverse md:flex-row justify-between items-center gap-8'>
+          <p className='text-sm text-neutral-600 font-mono-tech text-center md:text-left tracking-wide'>
+            System Kernel Built by BEIT Group 5 • Atharva College of Engineering • © {currentYear} OpenConsole
           </p>
 
           <div className='flex gap-4'>
@@ -167,7 +153,7 @@ const Footer = () => {
                   href={social.href}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='p-3 rounded-full bg-neutral-800 text-neutral-400 hover:bg-blue-600 hover:text-white transition-all duration-300 border border-neutral-700 hover:border-blue-600 shadow-md hover:shadow-blue-500/50'
+                  className='interactive p-3 rounded-full bg-[#02010A] text-neutral-500 hover:text-neon-cyan transition-all duration-300 border border-neutral-800 hover:border-neon-cyan shadow-md hover:shadow-[0_0_15px_rgba(0,240,255,0.4)]'
                   aria-label={social.label}
                 >
                   <Icon className='w-5 h-5' />
@@ -176,7 +162,7 @@ const Footer = () => {
             })}
           </div>
         </div>
-      </motion.div>
+      </div>
     </footer>
   );
 };
