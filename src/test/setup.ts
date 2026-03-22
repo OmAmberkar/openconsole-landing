@@ -51,3 +51,18 @@ Object.defineProperty(window, 'scrollTo', { value: vi.fn(), writable: true });
 afterEach(() => {
   cleanup();
 });
+
+// Mock SVG geometry methods (Essential for Workflow.tsx and GSAP animations)
+// We cast to 'any' to suppress TS2339 since JSDOM doesn't implement these geometry APIs
+if (!(SVGElement.prototype as any).getTotalLength) {
+  (SVGElement.prototype as any).getTotalLength = () => 1000;
+}
+
+if (!(SVGElement.prototype as any).getPointAtLength) {
+  (SVGElement.prototype as any).getPointAtLength = () => ({
+    x: 0,
+    y: 0,
+    alpha: 0,
+    beta: 0,
+  });
+}

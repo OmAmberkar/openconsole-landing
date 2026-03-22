@@ -29,6 +29,8 @@ const steps = [
   },
 ];
 
+
+
 export default function Workflow() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -83,7 +85,7 @@ export default function Workflow() {
 
         <div className='relative'>
           {/* Animated Connecting SVG Path (Hidden on Mobile) */}
-          <div className='hidden md:block absolute left-[50px] top-10 bottom-10 w-2 z-0'>
+          <div className='hidden md:block absolute left-12.5 top-10 bottom-10 w-2 z-0'>
             <svg className='w-full h-full' preserveAspectRatio='none' viewBox='0 0 10 1000'>
               {/* Background Track */}
               <path d='M5 0 L5 1000' stroke='rgba(255,255,255,0.05)' strokeWidth='2' fill='none' />

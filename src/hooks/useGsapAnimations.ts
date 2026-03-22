@@ -30,12 +30,12 @@ export const useTextReveal = (textRef: React.RefObject<HTMLHeadingElement | null
   useGSAP(
     () => {
       if (!textRef.current) return;
-      const chars = textRef.current.innerText.split('');
-      textRef.current.innerText = '';
+      const chars = textRef.current.textContent.split('');
+      textRef.current.textContent = '';
 
       chars.forEach((char) => {
         const span = document.createElement('span');
-        span.innerText = char === ' ' ? '\u00A0' : char;
+        span.textContent = char === ' ' ? '\u00A0' : char;
         span.style.opacity = '0';
         textRef.current?.appendChild(span);
       });
@@ -219,12 +219,14 @@ export const useTextSplitReveal = (textRef: React.RefObject<HTMLElement | null>)
     () => {
       if (!textRef.current) return;
       const textEl = textRef.current;
-      const words = textEl.innerText.split(' ');
+
+      const content = textEl.textContent || "";
+const words = content.split(' ');
       textEl.innerHTML = '';
 
       words.forEach((word) => {
         const span = document.createElement('span');
-        span.innerText = word + ' ';
+        span.textContent = word + ' ';
         span.style.display = 'inline-block';
         span.style.opacity = '0';
         textEl.appendChild(span);
