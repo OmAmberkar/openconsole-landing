@@ -1,21 +1,28 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from './App';
+import gsap from 'gsap';
 
 describe('App', () => {
-  it('renders the main application without crashing', () => {
+  it('renders the main application after loading', async () => {
     render(<App />);
 
-    // 1. Check for "Unified Cloud" (Handles multiple instances in Hero & CTA)
-    const cloudElements = screen.getAllByText(/Unified Cloud/i);
-    expect(cloudElements.length).toBeGreaterThan(0);
+    // 1. Force GSAP to finish the Preloader instantly
+    gsap.globalTimeline.progress(1);
 
-    // 2. Check for "Console" (Handles instances in Title, Description, Footer, etc.)
-    const consoleElements = screen.getAllByText(/Console/i);
-    expect(consoleElements.length).toBeGreaterThan(0);
+    // 2. Find the heading. findByRole is the "sexiest" way to do this.
+    // It combines "ORCHESTRATE", "THE", and "CLOUD" across all spans automatically.
+    const heading = await screen.findByRole('heading', {
+      name: /ORCHESTRATE THE CLOUD/i,
+    });
+    expect(heading).toBeInTheDocument();
 
-    // 3. (Optional) Check for a specific unique element, like the "Get Started" button
-    const ctaButtons = screen.getAllByText(/Get Started/i);
-    expect(ctaButtons.length).toBeGreaterThan(0);
+    // 3. Check for the Status Pill
+    const statusPill = await screen.findByText(/Protocol v2.0 Engaged/i);
+    expect(statusPill).toBeInTheDocument();
+
+    // 4. Find the CTA button
+    const ctaButton = await screen.findByText(/Initialize Core/i);
+    expect(ctaButton).toBeInTheDocument();
   });
 });
