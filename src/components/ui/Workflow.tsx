@@ -37,9 +37,10 @@ export default function Workflow() {
     const ctx = gsap.context(() => {
       // Animate SVG Line Fill based on scroll
       if (pathRef.current) {
-        const length = typeof pathRef.current.getTotalLength === 'function'
-        ? pathRef.current.getTotalLength()
-        : 1000; // Fallback for JSDOM
+        const length =
+          typeof pathRef.current.getTotalLength === 'function'
+            ? pathRef.current.getTotalLength()
+            : 1000; // Fallback for JSDOM
 
         gsap.set(pathRef.current, { strokeDasharray: length, strokeDashoffset: length });
 

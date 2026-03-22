@@ -13,7 +13,7 @@ describe('App', () => {
     // 2. Find the heading. findByRole is the "sexiest" way to do this.
     // It combines "ORCHESTRATE", "THE", and "CLOUD" across all spans automatically.
     const heading = await screen.findByRole('heading', {
-      name: /ORCHESTRATE THE CLOUD/i
+      name: /ORCHESTRATE THE CLOUD/i,
     });
     expect(heading).toBeInTheDocument();
 
