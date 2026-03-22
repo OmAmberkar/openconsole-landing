@@ -219,9 +219,7 @@ export const useTextSplitReveal = (textRef: React.RefObject<HTMLElement | null>)
     () => {
       if (!textRef.current) return;
       const textEl = textRef.current;
-
-      const content = textEl.textContent || "";
-const words = content.split(' ');
+      const words = (textEl.textContent || '').split(' ');
       textEl.innerHTML = '';
 
       words.forEach((word) => {

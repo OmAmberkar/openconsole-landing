@@ -29,8 +29,6 @@ const steps = [
   },
 ];
 
-
-
 export default function Workflow() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -39,7 +37,10 @@ export default function Workflow() {
     const ctx = gsap.context(() => {
       // Animate SVG Line Fill based on scroll
       if (pathRef.current) {
-        const length = pathRef.current.getTotalLength();
+        const length = typeof pathRef.current.getTotalLength === 'function'
+        ? pathRef.current.getTotalLength()
+        : 1000; // Fallback for JSDOM
+
         gsap.set(pathRef.current, { strokeDasharray: length, strokeDashoffset: length });
 
         gsap.to(pathRef.current, {
